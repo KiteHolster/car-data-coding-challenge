@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { AnyAction, createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
 import { AppState } from "..";
 
@@ -33,7 +33,8 @@ export const VehicleSlice = createSlice({
         },
     },
     extraReducers: (builder) => {
-        builder.addCase(HYDRATE, (state, action) => {
+        builder.addCase(HYDRATE, (state, action: AnyAction) => {
+            console.log(action);
 			return {
 				...state,
 				...action.payload.vehicle,

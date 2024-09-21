@@ -56,9 +56,8 @@ import Title from "antd/es/typography/Title";
 export default Home;
 
 export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
-  (store) => async (context) => {
+  (store) => async () => {
     store.dispatch(setData(vehicles));
-    console.log(context);
     return {
       props: {}
     }
