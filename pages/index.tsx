@@ -6,7 +6,6 @@ import { importData, setData } from "@/app/store/slices/vehicle";
 import { useSelector } from "react-redux";
 import Search from "antd/es/input/Search";
 import Title from "antd/es/typography/Title";
-import { useState } from "react";
 
  const Home: NextPage = () => {
   
