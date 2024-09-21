@@ -1,6 +1,5 @@
-import { Component } from "react";
 
-const SplashScreen = ({finishLoading}) => {
+const SplashScreen = () => {
     return (
         <>
         <div>
