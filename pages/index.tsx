@@ -6,9 +6,16 @@ import { importData, setData } from "@/app/store/slices/vehicle";
 import { useSelector } from "react-redux";
 import Search from "antd/es/input/Search";
 import Title from "antd/es/typography/Title";
+import { useEffect, useState } from "react";
+import SplashScreen from "@/components/SplashScreen";
 
- const Home: NextPage = () => {
-  
+const Home: NextPage = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (isLoading) return
+  }, [isLoading])
+
   const vehicleList = useSelector(importData);
   const columns = [
     {
@@ -37,21 +44,20 @@ import Title from "antd/es/typography/Title";
     },
   ];
   return (
+
     <div>
-      {vehicleList?.length === 0 ? (
-        <div>Loading...</div>
-      ) : (
-        <>
-          <div className="px-6 py-6 mx-auto w-25">
-            <Title className="text-center mt-8">Vehicle Information</Title>
-            <div className="md:hidden block">Some Text</div>
-            <Search placeholder="input search text" />
-            <Table dataSource={vehicleList} columns={columns} />
-          </div>
-        </>
+      {vehicleList?.length === 0 || isLoading ? (
+          <SplashScreen finishLoading={() => setIsLoading(false)}/>
+      ):(
+        <div className="px-6 py-6 mx-auto w-25 bg-">
+          <Title className="text-center mt-8">Vehicle Information</Title>
+          <div className="md:hidden block">Some Text</div>
+          <Search placeholder="input search text" />
+          <Table dataSource={vehicleList} columns={columns} />
+        </div>
       )}
     </div>
-  );
+  )
 }
 export default Home;
 
