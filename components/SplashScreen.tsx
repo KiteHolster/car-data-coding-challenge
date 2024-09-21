@@ -51,7 +51,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ finishLoading }) => {
     return (
         <div className="flex h-screen items-center justify-center text-center">
             <div className="flex flex-col items-center">
-                <Image id="logo" src="/speedometer.gif" alt="" width={100} height={100}/>
+                <Image unoptimized id="logo" src="/speedometer.gif" alt="" width={100} height={100}/>
                 <Title className="mt-4" level={2}>Loading...</Title>
             </div>
         </div>

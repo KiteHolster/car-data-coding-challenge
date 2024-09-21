@@ -32,8 +32,7 @@ For the following project I have installed the following libraries.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Rationale
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Using the SSR, we pre render all the components from the server side so that the client doesn't need to wait. The state of the data that is in the server gets hydrated so that it is synchronized with the client-side redux.
+The 
