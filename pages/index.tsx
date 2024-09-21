@@ -14,8 +14,8 @@ type DataIndex = keyof Vehicle;
 
 const Home: NextPage = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
+  const [, setSearchText] = useState('');
+  const [, setSearchedColumn] = useState('');
   const searchInput = useRef<InputRef>(null);
 
   const handleSearch = (
