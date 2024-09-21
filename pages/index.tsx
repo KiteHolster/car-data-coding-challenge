@@ -8,8 +8,7 @@ import Search from "antd/es/input/Search";
 import Title from "antd/es/typography/Title";
 import { useState } from "react";
 
- const Home: NextPage = (props) => {
-  const [isFilterVisible, setFilterVisible] = useState(false);
+ const Home: NextPage = () => {
   
   const vehicleList = useSelector(importData);
   const columns = [
@@ -59,7 +58,8 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
   (store) => async (context) => {
-    store.dispatch(setData(vehicles))
+    store.dispatch(setData(vehicles));
+    console.log(context);
     return {
       props: {}
     }
