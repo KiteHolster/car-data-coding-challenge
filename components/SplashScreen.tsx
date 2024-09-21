@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import anime from 'animejs';
 import Image from "next/image";
 import Title from "antd/es/typography/Title";
