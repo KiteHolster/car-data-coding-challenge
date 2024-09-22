@@ -1,4 +1,5 @@
 export interface Vehicle {
+	key: number,
 	Name: string
 	Model: string
     Type: string
