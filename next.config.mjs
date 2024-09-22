@@ -1,10 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: { API_URL: "https://car-data-coding-challenge-lpw6.vercel.app/"}
-  const apiUrl = process.env.API_URL;
-  const res = await fetch(`${apiUrl}/api/jobs`, {
-  cache: "no-store",
-  }),
+  env: { API_URL: "https://car-data-coding-challenge-lpw6.vercel.app/"},
   reactStrictMode: true,
   transpilePackages: [
     // antd & deps
