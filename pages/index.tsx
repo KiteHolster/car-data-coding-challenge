@@ -263,7 +263,7 @@ const Home: NextPage = () => {
             </div>
             <Table
               dataSource={vehicleList}
-              // @ts-ignore
+              // @ts-expect-error
               columns={columns}
               pagination={{ pageSize: isDesktop ? 10 : 50 }}
               scroll={{ y: isDesktop ? 800 : 240 }}
