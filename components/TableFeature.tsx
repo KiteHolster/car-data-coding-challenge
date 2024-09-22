@@ -64,8 +64,6 @@ const TableFeature: React.FC<TableFeatureProps> = ( TableFeatureProps ) => {
                     }
                 }
             });
-            // @ts-ignore
-            Upload.LIST_IGNORE;
         },
         maxCount:1,
         showUploadList: false,
