@@ -83,7 +83,7 @@ const Home: NextPage = () => {
   }, []);
 
   const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<Vehicle> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8,  }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           ref={searchInput}
