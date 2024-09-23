@@ -101,9 +101,10 @@ const TableFeature: React.FC<TableFeatureProps> = ( TableFeatureProps ) => {
                 </Upload>
             </Tooltip>
             <Button
+                type="primary"
                 onClick={TableFeatureProps.addToFavourite}
                 disabled={!TableFeatureProps.hasSelected}
-                className="w-32 block mb-3"
+                className="w-32 block mb-3 disabled:bg-white disabled:text-grey"
                 >
                 Add Favourite
             </Button>

@@ -305,9 +305,9 @@ const Home: NextPage = () => {
           <SplashScreen finishLoading={() => setIsLoading(false)}/>
       ):(
         <Content className="bg-[url('/car.jpg')] bg-cover bg-center  h-screen">
-          <div className="absolute inset-0 bg-black opacity-75"></div>
+          <div className="absolute inset-0 bg-slate-200 opacity-75"></div>
           <div className="px-6 py-6 mx-auto w-25 items-center relative z-10">
-            <Title className="text-center mt-8 !text-white" level={isDesktop ? 1 : 3}>Vehicle Information</Title>
+            <Title className="text-center mt-8" level={isDesktop ? 1 : 3}>Vehicle Information</Title>
             <div className="lg:flex lg:flex-row-reverse lg:items-center lg:gap-2">
                 {isDesktop ? (
                   <TableFeature
