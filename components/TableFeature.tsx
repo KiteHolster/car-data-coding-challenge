@@ -1,5 +1,5 @@
 import { UploadOutlined } from "@ant-design/icons";
-import { Button, message, Select, Switch, Upload, UploadProps } from "antd";
+import { Button, message, Select, Switch, Tooltip, Upload, UploadProps } from "antd";
 import { useDispatch } from "react-redux";
 import { CSVLink } from "react-csv";
 import { Vehicle } from "@/models/vehicle";
@@ -13,12 +13,15 @@ interface TableFeatureProps {
     onSorterChange: (selectedSorter: any) => void;
     sortAscending: boolean;
     setSortAscending: (sort: boolean) => void;
+    addToFavourite: () => void;
+    hasSelected: boolean;
 }
 
 const TableFeature: React.FC<TableFeatureProps> = ( TableFeatureProps ) => {
     const dispatch = useDispatch()
 
     const checkInvalidFile = (item: any): boolean => {
+        // Function to check if the file is in a valid form
         if (item.length != 6) {
             return false;
         }
@@ -34,6 +37,7 @@ const TableFeature: React.FC<TableFeatureProps> = ( TableFeatureProps ) => {
     }
 
     const props: UploadProps = {
+        // Prepping for the uploading of data
         accept: ".txt, .csv",
         beforeUpload: (file) => {
             Papa.parse(file, {
@@ -43,6 +47,7 @@ const TableFeature: React.FC<TableFeatureProps> = ( TableFeatureProps ) => {
                     const validData = data.every((item: any) => {
                         return checkInvalidFile(item)}
                     );
+                    // Key generation for each item in the list
                     const highestCurrentKey = TableFeatureProps.vehicleList.length;
                     if(validData && data.length != 0) {
                         const dataFormattedList = data.map((item: any, index: number) => {
@@ -85,13 +90,23 @@ const TableFeature: React.FC<TableFeatureProps> = ( TableFeatureProps ) => {
                 <Select.Option value = "Manufacturer">Manufacturer</Select.Option>
                 <Select.Option value = "Seating">Seating</Select.Option>
             </Select>
-            <Button className="block mb-3 w-32">
-                <CSVLink data={TableFeatureProps.vehicleList}>Download</CSVLink>
+            <Tooltip title="Downloads a csv file">
+                <Button className="block mb-3 w-32">
+                    <CSVLink data={TableFeatureProps.vehicleList}>Download</CSVLink>
+                </Button>
+            </Tooltip>
+            <Tooltip title="Please upload a csv file with the rows and columns in the following format Name | Model | Type | Manufacturer | Manufacturing Date | Seating. Max of 1 file">
+                <Upload {...props} className="block mb-3">
+                    <Button icon={<UploadOutlined />} className="w-32">Upload</Button>
+                </Upload>
+            </Tooltip>
+            <Button
+                onClick={TableFeatureProps.addToFavourite}
+                disabled={!TableFeatureProps.hasSelected}
+                className="w-32 block mb-3"
+                >
+                Add Favourite
             </Button>
-            <Upload {...props} className="block mb-3">
-                <Button icon={<UploadOutlined />} className="w-32">Upload</Button>
-            </Upload>
-            
         </>
     )
 }

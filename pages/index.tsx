@@ -1,17 +1,19 @@
-import { Button, Input, InputRef, Popover, Space, Table, TableColumnType } from "antd";
+import { Button, Input, InputRef, message, Modal, Popover, Space, Table, TableColumnType } from "antd";
 import { GetServerSideProps, NextPage } from "next";
 import { wrapper } from "@/app/store";
 import { importData, setData } from "@/app/store/slices/vehicle";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Title from "antd/es/typography/Title";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SplashScreen from "@/components/SplashScreen";
 import { Vehicle } from "@/models/vehicle";
-import { FilterDropdownProps } from "antd/es/table/interface";
-import { MenuOutlined, SearchOutlined } from "@ant-design/icons";
+import { FilterDropdownProps, TableRowSelection } from "antd/es/table/interface";
+import { CloseSquareOutlined, HeartOutlined, MenuOutlined, SearchOutlined } from "@ant-design/icons";
 import TableFeature from "@/components/TableFeature";
 import { Content } from "antd/es/layout/layout";
 import React from "react";
+import { setFavouriteData, importFavouriteData, addData } from "@/app/store/slices/favourite";
+import { CSVLink } from "react-csv";
 
 type DataIndex = keyof Vehicle;
 
@@ -27,6 +29,7 @@ const Home: NextPage = () => {
   // Vehicle list related useState
   const importedVehicle = useSelector(importData);
   const [vehicleList, setVehicleList] = useState([])
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   // Sorting related useState
   const [sortAscending, setSortAscending] = useState(true);
@@ -34,6 +37,51 @@ const Home: NextPage = () => {
   // Screen size handling
   const [isDesktop, setDesktop] = useState(false);
   const [showFilterMobile, setShowFilterMobile] = useState(false);
+
+  // For the Favourite Modal
+  const [open, setOpen] = useState(false);
+  const importFavourteList = useSelector(importFavouriteData);
+  const [favouriteList, setFavouriteList] = useState([])
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+      setOpen(false);
+  };
+
+  const handleDelete = (selectedVehicle: Vehicle) => {
+    const updatedList = favouriteList.filter((vehicle: Vehicle) => vehicle.key != selectedVehicle.key);
+    dispatch(setFavouriteData(updatedList));
+  }
+
+  // Favourites related
+  const dispatch = useDispatch();
+
+  // Functions that handle the adding elements to the favorite list
+  const addToFavourite = () => {
+    const selectedVehicles = vehicleList.filter((vehicle: Vehicle) => selectedRowKeys.includes(vehicle.key));
+
+    const duplicatesRemoved = selectedVehicles.filter((vehicle: Vehicle) => {
+      return !favouriteList.some((item: Vehicle) => item.key === vehicle.key)
+    });
+
+    dispatch(addData(duplicatesRemoved))
+
+    message.success('successfully added to favourites');
+  };
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection: TableRowSelection<Vehicle> = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  const hasSelected = selectedRowKeys.length > 0;
   
   // Handling Search
   const handleSearch = (
@@ -46,9 +94,10 @@ const Home: NextPage = () => {
     setSearchedColumn(dataIndex);
   };
 
-  const handleReset = (clearFilters: () => void) => {
+  const handleReset = (clearFilters: () => void, confirm: FilterDropdownProps['confirm'],) => {
     clearFilters();
     setSearchText('');
+    confirm();
   };
 
   const handleMenuClick = () => {
@@ -61,7 +110,8 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     setVehicleList(importedVehicle);
-  }, [importedVehicle])
+    setFavouriteList(importFavourteList);
+  }, [importedVehicle, importFavourteList])
 
   // Use effect for screen size "https://stackoverflow.com/questions/46586165/react-conditionally-render-based-on-viewport-size"
   useEffect(() => {
@@ -82,8 +132,9 @@ const Home: NextPage = () => {
     return () => window.removeEventListener('resize', updateMedia);
   }, []);
 
+  // Props that will be added to the search fields
   const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<Vehicle> => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
       <div style={{ padding: 8,  }} onKeyDown={(e) => e.stopPropagation()}>
         <Input
           ref={searchInput}
@@ -104,7 +155,7 @@ const Home: NextPage = () => {
             Search
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
             size="small"
             style={{ width: 90 }}
           >
@@ -128,6 +179,7 @@ const Home: NextPage = () => {
     }
   });
 
+  // Logic for sorting
   const onSorterChange = useCallback((selectedSorter: any) => {
     // This function handles the sorting of a specific column that is specified within the Table Feature.
     // Uses usecallback function because we only need this function rerendered when vehiclelist changes.
@@ -158,9 +210,14 @@ const Home: NextPage = () => {
     setVehicleList(finalVehicleList); 
   }, [vehicleList, sortAscending]);
 
+  // Defining the column for table
   const columns= [
     {
-      title: "Name/Model/Manufacturer",
+      title: (
+      <>
+        Name/<br/>Model/<br/>Manufacturer
+      </>
+      ),
       render: (car: any) => (
         <>
           {car.Name}
@@ -168,6 +225,7 @@ const Home: NextPage = () => {
           {car.Model}
         </>
       ),
+      ...getColumnSearchProps('Name'),
       responsive: ['xs'],
     },
     {
@@ -215,8 +273,17 @@ const Home: NextPage = () => {
       ],
       onFilter: (value: any, record: { Seating: number; }) => record.Seating === value,
     },
+    (open ? {
+      title: '',
+      dataIndex: '',
+      key:'delete',
+      render: (_: any, record: Vehicle) => <Button icon={<CloseSquareOutlined />} onClick={() => handleDelete(record)} />
+    }: {
+      width: '1%'
+    })
   ];
 
+  // Table is placed inside a Popover
   const content = (
     <div className="block">
       <TableFeature
@@ -224,6 +291,8 @@ const Home: NextPage = () => {
         onSorterChange={onSorterChange}
         sortAscending={sortAscending}
         setSortAscending={setSortAscending}
+        addToFavourite={addToFavourite}
+        hasSelected={hasSelected}
       />
       <a onClick={handleMenuClick}>Close</a>
     </div>
@@ -235,9 +304,10 @@ const Home: NextPage = () => {
       {vehicleList?.length === 0 || isLoading ? (
           <SplashScreen finishLoading={() => setIsLoading(false)}/>
       ):(
-        <Content className="bg-gradient-to-r from-gray-200 h-screen">
-          <div className="px-6 py-6 mx-auto w-25 items-center">
-            <Title className="text-center mt-8">Vehicle Information</Title>
+        <Content className="bg-[url('/car.jpg')] bg-cover bg-center  h-screen">
+          <div className="absolute inset-0 bg-black opacity-75"></div>
+          <div className="px-6 py-6 mx-auto w-25 items-center relative z-10">
+            <Title className="text-center mt-8 !text-white" level={isDesktop ? 1 : 3}>Vehicle Information</Title>
             <div className="lg:flex lg:flex-row-reverse lg:items-center lg:gap-2">
                 {isDesktop ? (
                   <TableFeature
@@ -245,9 +315,12 @@ const Home: NextPage = () => {
                     onSorterChange={onSorterChange}
                     sortAscending={sortAscending}
                     setSortAscending={setSortAscending}
+                    addToFavourite={addToFavourite}
+                    hasSelected={hasSelected}
                   />
                 ) : (
                   <>
+                    {/* when screen size is small, instead of showing the filter in a row, it shows the filter options */}
                     <Popover
                       placement="leftTop"
                       content={content}
@@ -260,13 +333,36 @@ const Home: NextPage = () => {
                     </Popover>
                   </>
                 )}
-            </div>
+                {/* Generating the modal for favourites table */}
+                <Button className="w-32 float-right mb-3" onClick={showModal} icon={<HeartOutlined />} />
+                <Modal
+                    width={1000}
+                    open={open}
+                    onCancel={handleCancel}
+                    footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        Return
+                    </Button>,
+                    <Button key="submit" type="primary">
+                        <CSVLink data={favouriteList}>Download</CSVLink>
+                    </Button>
+                    ]}
+                >
+                    <Table
+                      // @ts-expect-error: It works fine
+                      columns={columns}
+                      dataSource={favouriteList}
+                      className="mt-8"
+                    />
+                </Modal>
+            </div> 
             <Table
               dataSource={vehicleList}
               // @ts-expect-error: It works fine
               columns={columns}
               pagination={{ pageSize: isDesktop ? 10 : 50 }}
               scroll={{ y: isDesktop ? 800 : 240 }}
+              rowSelection={rowSelection}
               expandable={{
                 expandedRowRender: (record: Vehicle) => (
                   <> 
@@ -288,6 +384,7 @@ const Home: NextPage = () => {
 }
 export default Home;
 
+// For SSR
 export const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
   (store) => async () => {
     const res = await fetch(`${process.env.API_URL}/api/hello`);

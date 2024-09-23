@@ -2,10 +2,12 @@ import { configureStore, ThunkAction } from "@reduxjs/toolkit";
 import vehicleReducer from './slices/vehicle'
 import { createWrapper } from "next-redux-wrapper";
 import { Action } from 'redux';
+import favouriteReducer from "./slices/favourite";
 
 const makeStore = () => configureStore({
     reducer: {
-        vehicle: vehicleReducer
+        vehicle: vehicleReducer,
+        favourite: favouriteReducer
     },
     devTools: true
 })
