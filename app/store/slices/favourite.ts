@@ -1,7 +1,6 @@
 import { AnyAction, createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
 import { AppState } from "..";
-import { Vehicle } from "@/models/vehicle";
 
 
 export const FavouriteSlice = createSlice({
